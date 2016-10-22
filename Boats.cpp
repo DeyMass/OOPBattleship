@@ -28,7 +28,7 @@ protected:
 	int  x2;
 	int  y2;
 public:
-	DvuPalub(int x, int y,int x2, int y2): OdnoPalub(x,y){}
+	DvuPalub(int sx, int sy, bool vert): OdnoPalub(sx,sy), vertical(vert){}
 };
 
 class TrePalub: public DvuPalub{
@@ -38,7 +38,7 @@ protected:
 	int  x3;
 	int  y3;
 public:
-	TrePalub(int x, int y, int x2, int y2, int x3, int y3): DvuPalub(x,y,x2,y2){}
+	TrePalub(int sx, int sy, bool vert): DvuPalub(sx,sy,vert){}
 };
 
 class ChetirPalub: public TrePalub{
@@ -48,7 +48,7 @@ public:
 	int  x4;
 	int  y4;
 public:
-	ChetirPalub(int x, int y, int x2, int y2, int x3, int y3, int x4, int y4): TrePalub(x,y,x2,y2,x3,y3){}
+	ChetirPalub(int sx, int sy, bool vert): TrePalub(sx,sy,vert){}
 };
 
 
