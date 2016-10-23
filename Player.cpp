@@ -31,10 +31,45 @@ public:
 		return 0;
 	}
 	void PutBoat(int x, int y, int BoatType){
-		if (BoatType == 1)
-			Pole[x][y] = new OdnoPalub(x, y);
-		if (BoatType == 2)
-			//Pole[x][y] = new DvuPalub;
+		if (BoatType == 1) {
+            Pole[x][y-1]    = FLAG;
+            Pole[x][y+1]    = FLAG;
+            Pole[x][y]      = new OdnoPalub(x, y);
+            Pole[x-1][y]    = FLAG;
+            Pole[x-1][y-1]  = FLAG;
+            Pole[x-1][y+1]  = FLAG;
+            Pole[x+1][y]    = FLAG;
+            Pole[x+1][y-1]  = FLAG;
+            Pole[x+1][y+1]  = FLAG;
+        }
+		if (BoatType == 2) {
+            Pole[x][y] = new DvuPalub(x, y, vertical);
+            if (vertical)
+                Pole[x][y+1]= Pole[x][y];
+            else
+                Pole[x+1][y]= Pole[x][y];
+            Pole[x-1][y-1]  = FLAG;
+            Pole[x-1][y]    = FLAG;
+            Pole[x-1][y+1]  = FLAG;
+            Pole[x][y-1]    = FLAG;
+            Pole[x+1][y-1]  = FLAG;
+            Pole[x+1][y + 1]= FLAG;
+            if (vertical) {
+                Pole[x + 1][y]     = FLAG;
+                Pole[x+1][y]       = FLAG;
+                Pole[x+1][y + 2]   = FLAG;
+                Pole[x][y + 2]     = FLAG;
+                Pole[x - 1][y + 2] = FLAG;
+            }
+            else {
+                Pole[x + 2][y - 1] = FLAG;
+                Pole[x + 2][y    ] = FLAG;
+                Pole[x + 2][y + 1] = FLAG;
+                Pole[x][y + 1]     = FLAG;
+            }
+
+
+        }
 		if (BoatType == 3)
 			//Pole[x][y] = new TrePalub;
 		if (BoatType == 4);
@@ -42,9 +77,8 @@ public:
 	}
 
     void Flip(){
+        HighlightBoat(2,true);
         vertical = 1 - vertical;
-        cleardevice();
-        DrawGrid(0,0);
     }
 
 	bool CheckAvailable(int tempx, int tempy, int TypeOfCheck){
@@ -56,14 +90,9 @@ public:
 		{
 			return false;
 		}
-		if (TypeOfCheck == 1)
-			for (int i = 1; i >= -1; i--) {
-				for (int j = -1; j <= 1; j++) {
-		//			printf("Pole[%i][%i] = %p\n",tempx+i,tempy+j, Pole[tempx + i][tempy + j]);
-					if (Pole[tempx + i][tempy + j] != NULL) return false;
-				}
-			}
-		//printf("-----------------------------------------------------");
+		if (TypeOfCheck == 1) {
+            if (Pole[tempx][tempy] != NULL) return false;
+        }
         if (TypeOfCheck == 2)
         {
             if (vertical == false && tempx > 9)
@@ -74,6 +103,11 @@ public:
             {
                 return false;
             }
+            if ((Pole[tempx][tempy] != NULL || Pole[tempx + 1][tempy] != NULL) && !vertical)
+                return false;
+            if ((Pole[tempx][tempy] != NULL || Pole[tempx][tempy + 1] != NULL) && vertical)
+                return false;
+
         }
         return true;
 	}
@@ -98,8 +132,12 @@ public:
 		static int tempx = -1;
 		static int tempy = -1;
 		if (flag){
-			setfillstyle(1,BLACK);
+            setfillstyle(1,BLACK);
 			floodfill(tempx*GRIDSCALE + 1,tempy*GRIDSCALE + 1,WHITE);
+            if (BoatType == 2 && vertical)
+                floodfill(tempx * GRIDSCALE + 1, (tempy + 1) * GRIDSCALE + 1, WHITE);
+            if (BoatType == 2 && !vertical)
+                floodfill((tempx + 1) * GRIDSCALE + 1, tempy * GRIDSCALE + 1, WHITE);
 			tempx = -1;
 			tempy = -1;
 			return;
@@ -140,20 +178,27 @@ public:
 	}
 
 	void PlaceBoats(int BoatType){
-		printf("::::::: %i ::::::::::", BoatType);
 		if ((Nboat1 == 4 || Nboat2 == 3 || Nboat3 == 2 || Nboat4 == 1) && BoatType != 0){
 			BoatType = 0;
+            if (Nboat1 == 4) Nboat1 = 5;
+            if (Nboat2 == 3) Nboat2 = 5;
+            if (Nboat3 == 2) Nboat3 = 5;
+            if (Nboat4 == 1) Nboat4 = 5;
+
 			outtextxy(350,650,"Out of boats!");
 			return;
 		}
-		printf(" ----- ---- - %i - ---- -----\n",BoatType);
+        if (BoatType == 1 && Nboat1 >= 4) return;
+        if (BoatType == 2 && Nboat2 >= 3) return;
+        if (BoatType == 3 && Nboat3 >= 2) return;
+        if (BoatType == 4 && Nboat4 >= 1) return;
+
 		if (BoatType != 0) {
 			setfillstyle(1, BLACK);
 			bar(350,650,700,700);
 		}
-		printf("%p\n",Pole[mousex() / GRIDSCALE][mousey() / GRIDSCALE]);
+		printf("%p \n",Pole[mousex() / GRIDSCALE][mousey() / GRIDSCALE]);
 		HighlightBoat(BoatType);
-		//printf("Frame %i \n",CheckAvailable(mousex() / GRIDSCALE, mousey() / GRIDSCALE,1));
 		if (ismouseclick(WM_LBUTTONDOWN))
 		{
 			HighlightBoat(1,true);

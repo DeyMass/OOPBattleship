@@ -1,4 +1,5 @@
 #define GRIDSCALE 40
+#define FLAG (OdnoPalub*)1
 //#define BLACK COLOR(0,0,0)
 //#define WHITE COLOR(255,255,255)
 //#define GREEN COLOR(0,255,0);
@@ -43,6 +44,7 @@ int type = 1;
 			clearmouseclick(WM_LBUTTONDOWN);
 			type = 2;
 			printf("2 choosed");
+            player1.HighlightBoat(2,true);
 		}
 		if (ismouseclick(WM_LBUTTONDOWN) && mousex()> 600 && mousex()<700 && mousey() > 300 && mousey() < 350)
 		{
